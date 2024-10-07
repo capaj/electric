@@ -1,5 +1,11 @@
 # @electric-sql/client
 
+## 0.6.1
+
+### Patch Changes
+
+- c980a76: Make parser generic such that it can be parameterized with additional types supported by custom parsers.
+
 ## 0.6.0
 
 ### Minor Changes
