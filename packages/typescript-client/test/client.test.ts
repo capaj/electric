@@ -334,7 +334,6 @@ describe(`Shape`, () => {
   it(`should honour the sendDeltas option`, async ({
     insertIssues,
     updateIssue,
-    issuesTableKey,
     issuesTableUrl,
     clearIssuesShape,
     aborter,
@@ -366,7 +365,7 @@ describe(`Shape`, () => {
       }
 
       const changeMsg: ChangeMessage<Row> = msgs[0] as ChangeMessage<Row>
-      expect(changeMsg.headers.operation).toEqual('update')
+      expect(changeMsg.headers.operation).toEqual(`update`)
       expect(changeMsg.value).toEqual(expectedValue)
     } finally {
       // the normal cleanup doesn't work because our shape definition is
