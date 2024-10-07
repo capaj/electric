@@ -10,7 +10,7 @@ defmodule Electric.Shapes.Shape do
   alias Electric.Utils
 
   @enforce_keys [:root_table]
-  defstruct [:root_table, :table_info, :where]
+  defstruct [:root_table, :table_info, :where, send_deltas: true]
 
   @type table_info() :: %{
           columns: [Inspector.column_info(), ...],
@@ -21,7 +21,8 @@ defmodule Electric.Shapes.Shape do
           table_info: %{
             Electric.relation() => table_info()
           },
-          where: Electric.Replication.Eval.Expr.t() | nil
+          where: Electric.Replication.Eval.Expr.t() | nil,
+          send_deltas: boolean()
         }
 
   @type table_with_where_clause() :: {Electric.relation(), String.t() | nil}
@@ -56,6 +57,7 @@ defmodule Electric.Shapes.Shape do
 
   @shape_schema NimbleOptions.new!(
                   where: [type: {:or, [:string, nil]}],
+                  send_deltas: [type: :boolean, default: true],
                   inspector: [
                     type: :mod_arg,
                     default: {Electric.Postgres.Inspector, Electric.DbPool}
@@ -72,7 +74,8 @@ defmodule Electric.Shapes.Shape do
        %__MODULE__{
          root_table: table,
          table_info: %{table => %{pk: pk_cols, columns: column_info}},
-         where: where
+         where: where,
+         send_deltas: Access.get(opts, :send_deltas, true)
        }}
     end
   end

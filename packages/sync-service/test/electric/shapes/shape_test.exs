@@ -164,6 +164,14 @@ defmodule Electric.Shapes.ShapeTest do
       assert {:error, "At location 6" <> _} =
                Shape.new("other_table", @opts ++ [where: "value + 1 > 10"])
     end
+
+    test "assigns the correct send_deltas value" do
+      assert {:ok, %Shape{send_deltas: true}} =
+               Shape.new("other_table", @opts ++ [send_deltas: true])
+
+      assert {:ok, %Shape{send_deltas: false}} =
+               Shape.new("other_table", @opts ++ [send_deltas: false])
+    end
   end
 
   describe "new!/2" do
@@ -191,6 +199,19 @@ defmodule Electric.Shapes.ShapeTest do
 
       assert Shape.hash(%Shape{root_table: {"public", "table"}}) !=
                Shape.hash(%Shape{root_table: {"public", "table2"}})
+    end
+
+    test "different values of `send_delta` produce differing ids" do
+      refute Shape.hash(%Shape{
+               root_table: {"public", "table2"},
+               where: "something = true",
+               send_deltas: true
+             }) ==
+               Shape.hash(%Shape{
+                 root_table: {"public", "table2"},
+                 where: "something = true",
+                 send_deltas: false
+               })
     end
   end
 
