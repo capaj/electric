@@ -213,7 +213,7 @@ defmodule Electric.ShapeCacheTest do
         end)
 
       assert log =~
-               "Got snapshot information for a #{shape_handle}, that shape id is no longer valid. Ignoring."
+               "Got snapshot information for a #{shape_handle}, that shape handle is no longer valid. Ignoring."
 
       # should have nothing in the meta table
       assert :ets.next_lookup(shape_meta_table, :_) == :"$end_of_table"
@@ -468,7 +468,7 @@ defmodule Electric.ShapeCacheTest do
       :with_shape_log_collector
     ]
 
-    test "returns true for known shape id", ctx do
+    test "returns true for known shape handle", ctx do
       %{shape_cache_opts: opts} =
         with_shape_cache(Map.merge(ctx, %{pool: nil, inspector: @stub_inspector}),
           prepare_tables_fn: @prepare_tables_noop,
@@ -524,8 +524,8 @@ defmodule Electric.ShapeCacheTest do
       assert ShapeCache.await_snapshot_start(shape_handle, opts) == :started
     end
 
-    test "returns an error if waiting is for an unknown shape id", ctx do
-      shape_handle = "orphaned_id"
+    test "returns an error if waiting is for an unknown shape handle", ctx do
+      shape_handle = "orphaned_handle"
 
       storage = Storage.for_shape(shape_handle, ctx.storage)
 
@@ -668,7 +668,7 @@ defmodule Electric.ShapeCacheTest do
       :with_shape_log_collector
     ]
 
-    test "cleans up shape data and rotates the shape id", ctx do
+    test "cleans up shape data and rotates the shape handle", ctx do
       %{shape_cache_opts: opts} =
         with_shape_cache(Map.merge(ctx, %{pool: nil, inspector: @stub_inspector}),
           prepare_tables_fn: @prepare_tables_noop,
@@ -702,7 +702,7 @@ defmodule Electric.ShapeCacheTest do
       ref = ctx.electric_instance_id |> Shapes.Consumer.whereis(shape_handle) |> Process.monitor()
 
       log = capture_log(fn -> ShapeCache.handle_truncate(shape_handle, opts) end)
-      assert log =~ "Truncating and rotating shape id"
+      assert log =~ "Truncating and rotating shape handle"
 
       assert_receive {:DOWN, ^ref, :process, _pid, _}
       # Wait a bit for the async cleanup to complete
@@ -721,7 +721,7 @@ defmodule Electric.ShapeCacheTest do
       :with_shape_log_collector
     ]
 
-    test "cleans up shape data and rotates the shape id", ctx do
+    test "cleans up shape data and rotates the shape handle", ctx do
       %{shape_cache_opts: opts} =
         with_shape_cache(Map.merge(ctx, %{pool: nil, inspector: @stub_inspector}),
           prepare_tables_fn: @prepare_tables_noop,
@@ -913,7 +913,7 @@ defmodule Electric.ShapeCacheTest do
 
     defp restart_shape_cache(context) do
       stop_shape_cache(context)
-      # Wait 1 millisecond to ensure shape IDs are not generated the same
+      # Wait 1 millisecond to ensure shape handles are not generated the same
       Process.sleep(1)
       with_cub_db_storage(context)
 

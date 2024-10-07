@@ -13,7 +13,7 @@ defmodule Electric.ShapeCache.StorageImplimentationsTest do
 
   @moduletag :tmp_dir
 
-  @shape_handle "the-shape-id"
+  @shape_handle "the-shape-handle"
 
   @snapshot_offset LogOffset.first()
   @snapshot_offset_encoded to_string(@snapshot_offset)

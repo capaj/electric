@@ -93,7 +93,7 @@ defmodule Electric.ShapeCache do
 
   @impl Electric.ShapeCacheBehaviour
   def get_or_create_shape_handle(shape, opts \\ []) do
-    # Get or create the shape ID and fire a snapshot if necessary
+    # Get or create the shape handle and fire a snapshot if necessary
     if shape_state = get_shape(shape, opts) do
       shape_state
     else
@@ -286,7 +286,7 @@ defmodule Electric.ShapeCache do
         {{shape_handle, latest_offset}, state}
       end
 
-    Logger.debug("Returning shape id #{shape_handle} for shape #{inspect(shape)}")
+    Logger.debug("Returning shape handle #{shape_handle} for shape #{inspect(shape)}").shape.handle
 
     {:reply, {shape_handle, latest_offset}, [], state}
   end
@@ -322,7 +322,7 @@ defmodule Electric.ShapeCache do
   def handle_call({:truncate, shape_handle}, _from, state) do
     with {:ok, cleaned_up_shape} <- clean_up_shape(state, shape_handle) do
       Logger.info(
-        "Truncating and rotating shape id, previous shape id #{shape_handle}, definition: #{inspect(cleaned_up_shape)}"
+        "Truncating and rotating shape handle, previous shape handle #{shape_handle}, definition: #{inspect(cleaned_up_shape)}"
       )
     end
 
@@ -330,7 +330,7 @@ defmodule Electric.ShapeCache do
   end
 
   def handle_call({:clean, shape_handle}, _from, state) do
-    # ignore errors when cleaning up non-existant shape id
+    # ignore errors when cleaning up non-existant shape handle
     with {:ok, cleaned_up_shape} <- clean_up_shape(state, shape_handle) do
       Logger.info("Cleaning up shape #{shape_handle}, definition: #{inspect(cleaned_up_shape)}")
     end
@@ -351,7 +351,7 @@ defmodule Electric.ShapeCache do
       ) do
     unless shape_status.set_snapshot_xmin(state.persistent_state, shape_handle, xmin) do
       Logger.warning(
-        "Got snapshot information for a #{shape_handle}, that shape id is no longer valid. Ignoring."
+        "Got snapshot information for a #{shape_handle}, that shape handle is no longer valid. Ignoring."
       )
     end
 
